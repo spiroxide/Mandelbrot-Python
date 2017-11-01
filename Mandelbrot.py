@@ -1,16 +1,33 @@
-from math import *
+from string import *
 
-MAX_ITERATIONS = 1000
+WIDTH = 1920
+HEIGHT = 1080
+ASCI = digits + ascii_letters + punctuation
+MAX_ITERATIONS = len(ASCI) - 1
 CUT_OFF = 4
 
 
-def map_range(f_value, f_start, f_end, t_start, t_end):
-    return (t_end - t_start) / (f_end - f_start) * (f_value - f_start) + t_start
+def map_range(f_val, f_range, t_range):
+    """
+    returns the value of f_val from f_range converted to t_range
+    :param f_val: value to convert from
+    :param f_range: range to convert from
+    :param t_range: range to convert to
+    :return: the value of f_val from f_range converted to t_range
+    """
+    return (t_range[len(t_range) - 1] - t_range[0]) / (f_range[len(f_range) - 1] - f_range[0]) * (f_val - f_range[0]) + t_range[0]
 
 
 def mandelbrot(real, imaginary):
+    """
+    returns the number of iterations it takes to reach the CUT_OFF
+    :param real: real portion of a complex number
+    :param imaginary: imaginary portion of a complex number
+    :return: number of iterations it took to reach the CUT_OFF
+    """
     a = real
     b = imaginary
+
     i = 0
     while i < MAX_ITERATIONS:
         aa = a * a
@@ -19,6 +36,7 @@ def mandelbrot(real, imaginary):
 
         a = aa - bb + real
         b = 2 * ab + imaginary
+
         if a * a + b * b > CUT_OFF:
             break
         i += 1
@@ -26,18 +44,16 @@ def mandelbrot(real, imaginary):
 
 
 def main():
-    imaginary = 0
-    while imaginary < 200:
-        real = 0
-        while real < 500:
-            val = mandelbrot(map_range(real, 0, 500, -3, 3), map_range(imaginary, 0, 200, -3, 3))
+    file = open("C:\\Users\\Erich Ostendarp\\Workspace\\PyCharmProjects\\Mandelbrot\\mandelbrot.txt", 'w')
+    for imaginary in range(HEIGHT + 1):
+        for real in range(WIDTH + 1):
+            val = mandelbrot(map_range(real, range(WIDTH + 1), range(-2, 3)), map_range(imaginary, range(HEIGHT + 1), range(-2, 3)))
             if val <= 0:
-                print(' ', end='')
+                file.write(' ')
             else:
-                print(int(log10(val)), end='')
-            real += 1
-        print()
-        imaginary += 1
+                file.write(ASCI[val])
+        file.write('\n')
+    file.close()
 
 
 main()
