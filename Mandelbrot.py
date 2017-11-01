@@ -1,7 +1,7 @@
 from string import *
 
-WIDTH = 1920
-HEIGHT = 1080
+WIDTH = 960
+HEIGHT = 540
 ASCI = digits + ascii_letters + punctuation
 MAX_ITERATIONS = len(ASCI) - 1
 CUT_OFF = 4
@@ -45,9 +45,9 @@ def mandelbrot(real, imaginary):
 
 def main():
     file = open("C:\\Users\\Erich Ostendarp\\Workspace\\PyCharmProjects\\Mandelbrot\\mandelbrot.txt", 'w')
-    for imaginary in range(HEIGHT + 1):
-        for real in range(WIDTH + 1):
-            val = mandelbrot(map_range(real, range(WIDTH + 1), range(-2, 3)), map_range(imaginary, range(HEIGHT + 1), range(-2, 3)))
+    for imaginary in range(HEIGHT):
+        for real in range(WIDTH):
+            val = mandelbrot(map_range(real, range(WIDTH), range(-2, 3)), map_range(imaginary, range(HEIGHT), range(-2, 3)))
             if val <= 0:
                 file.write(' ')
             else:
