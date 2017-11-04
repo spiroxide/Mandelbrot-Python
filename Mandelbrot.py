@@ -1,24 +1,35 @@
-from string import *
+import PIL.Image
+from tkinter import *
 
-WIDTH = 960
-HEIGHT = 540
-ASCI = digits + ascii_letters + punctuation
-MAX_ITERATIONS = len(ASCI) - 1
+WIDTH = 800
+HEIGHT = 800
+
+x_translate = .5
+y_translate = 0
+zoom = 2
+
+MAX_ITERATIONS = 40
 CUT_OFF = 4
 
+COLOR_CAP = 255
+RAIN_RINGS = 7
+CHUNK = MAX_ITERATIONS / RAIN_RINGS
 
-def map_range(f_val, f_range, t_range):
-    """
-    returns the value of f_val from f_range converted to t_range
-    :param f_val: value to convert from
-    :param f_range: range to convert from
-    :param t_range: range to convert to
-    :return: the value of f_val from f_range converted to t_range
-    """
-    return (t_range[len(t_range) - 1] - t_range[0]) / (f_range[len(f_range) - 1] - f_range[0]) * (f_val - f_range[0]) + t_range[0]
+RED = (COLOR_CAP, 0, 0)
+ORANGE = (COLOR_CAP, COLOR_CAP / 2, 0)
+YELLOW = (COLOR_CAP, COLOR_CAP, 0)
+GREEN = (0, COLOR_CAP, 0)
+BLUE = (0, 0, COLOR_CAP)
+INDIGO = (COLOR_CAP / 3, 0, COLOR_CAP / 2)
+VIOLET = (COLOR_CAP / 2, 0, COLOR_CAP)
+BLACK = (0, 0, 0)
 
 
-def mandelbrot(real, imaginary):
+def map_range(f_val, f_start, f_end, t_start, t_end):
+    return (t_end - t_start) / (f_end - f_start) * (f_val - f_start) + t_start
+
+
+def mandelbrot_value(real, imaginary):
     """
     returns the number of iterations it takes to reach the CUT_OFF
     :param real: real portion of a complex number
@@ -43,17 +54,97 @@ def mandelbrot(real, imaginary):
     return i
 
 
-def main():
-    file = open("C:\\Users\\Erich Ostendarp\\Workspace\\PyCharmProjects\\Mandelbrot\\mandelbrot.txt", 'w')
+def color_fade(start, end, i, scope):
+    """
+
+    :param start:
+    :param end:
+    :param i:
+    :param scope:
+    :return:
+    """
+    return int(start[0] + (i * (end[0] - start[0]) / scope)), \
+           int(start[1] + (i * (end[1] - start[1]) / scope)), \
+               int(start[2] + (i * (end[2] - start[2]) / scope))
+
+
+def mandelbrot_image():
+    """
+
+    :return:
+    """
+    mandelbrot = []
     for imaginary in range(HEIGHT):
         for real in range(WIDTH):
-            val = mandelbrot(map_range(real, range(WIDTH), range(-2, 3)), map_range(imaginary, range(HEIGHT), range(-2, 3)))
-            if val <= 0:
-                file.write(' ')
-            else:
-                file.write(ASCI[val])
-        file.write('\n')
-    file.close()
+            val = mandelbrot_value(map_range(real, 0, WIDTH, -2 / zoom - x_translate, 2 / zoom - x_translate),
+                                   map_range(imaginary, 0, HEIGHT, -2 / zoom - y_translate, 2 / zoom - y_translate))
+            if val <= CHUNK:
+                mandelbrot.append(color_fade(RED, ORANGE, val, CHUNK))  # Red to Orange
+            elif val <= 2 * CHUNK:
+                mandelbrot.append(color_fade(ORANGE, YELLOW, val - CHUNK, CHUNK))  # Orange to Yellow
+            elif val <= 3 * CHUNK:
+                mandelbrot.append(color_fade(YELLOW, GREEN, val - 2 * CHUNK, CHUNK))  # Yellow to Green
+            elif val <= 4 * CHUNK:
+                mandelbrot.append(color_fade(GREEN, BLUE, val - 3 * CHUNK, CHUNK))  # Green to Blue
+            elif val <= 5 * CHUNK:
+                mandelbrot.append(color_fade(BLUE, INDIGO, val - 4 * CHUNK, CHUNK))  # Blue to Indigo
+            elif val <= 6 * CHUNK:
+                mandelbrot.append(color_fade(INDIGO, VIOLET, val - 5 * CHUNK, CHUNK))  # Indigo to Violet
+            elif val <= 7 * CHUNK:
+                mandelbrot.append(color_fade(VIOLET, BLACK, val - 6 * CHUNK, CHUNK))  # Violet to Black
+    image = PIL.Image.new('RGB', (WIDTH, HEIGHT))
+    image.putdata(mandelbrot)
+    image.save("mandelbrot.gif")
+
+
+# x_current = -1
+# y_current = -1
+#
+#
+# def left_press(event):
+#     """
+#
+#     :param event:
+#     :return:
+#     """
+#     global x_current, y_current
+#     x_current = event.x
+#     y_current = event.y
+#
+#
+# def left_release(event):
+#     """
+#
+#     :param event:
+#     :return:
+#     """
+#     global x_translate, y_translate
+#     x_translate += (event.x - x_current) / zoom
+#     y_translate += (event.y - y_current) / zoom
+#
+#
+# def mouse_wheel(event):
+#     """
+#
+#     :param event:
+#     :return:
+#     """
+#     global zoom
+#     zoom += event.delta / 120
+
+
+def main():
+    mandelbrot_image()
+    root = Tk()
+    root.title("Mandelbrot")
+    # root.bind_all("<Button-1>", left_press)
+    # root.bind_all("<ButtonRelease-1>", left_release)
+    # root.bind_all("<MouseWheel>", mouse_wheel)
+    image = PhotoImage(file="mandelbrot.gif")
+    label = Label(root, image=image)
+    label.pack()
+
+    root.mainloop()
 
 
 main()
