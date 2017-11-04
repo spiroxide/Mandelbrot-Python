@@ -6,7 +6,7 @@ HEIGHT = 800
 
 x_translate = .5
 y_translate = 0
-zoom = 2
+zoom = 1
 
 MAX_ITERATIONS = 40
 CUT_OFF = 4
@@ -97,49 +97,49 @@ def mandelbrot_image():
     image.save("mandelbrot.gif")
 
 
-# x_current = -1
-# y_current = -1
-#
-#
-# def left_press(event):
-#     """
-#
-#     :param event:
-#     :return:
-#     """
-#     global x_current, y_current
-#     x_current = event.x
-#     y_current = event.y
-#
-#
-# def left_release(event):
-#     """
-#
-#     :param event:
-#     :return:
-#     """
-#     global x_translate, y_translate
-#     x_translate += (event.x - x_current) / zoom
-#     y_translate += (event.y - y_current) / zoom
-#
-#
-# def mouse_wheel(event):
-#     """
-#
-#     :param event:
-#     :return:
-#     """
-#     global zoom
-#     zoom += event.delta / 120
+x_current = -1
+y_current = -1
+
+
+def left_press(event):
+    """
+
+    :param event:
+    :return:
+    """
+    global x_current, y_current
+    x_current = event.x
+    y_current = event.y
+
+
+def left_release(event):
+    """
+
+    :param event:
+    :return:
+    """
+    global x_translate, y_translate
+    x_translate += (event.x - x_current) / zoom
+    y_translate += (event.y - y_current) / zoom
+
+
+def mouse_wheel(event):
+    """
+
+    :param event:
+    :return:
+    """
+    global zoom
+    zoom += event.delta / 1200
 
 
 def main():
     mandelbrot_image()
     root = Tk()
     root.title("Mandelbrot")
-    # root.bind_all("<Button-1>", left_press)
-    # root.bind_all("<ButtonRelease-1>", left_release)
-    # root.bind_all("<MouseWheel>", mouse_wheel)
+    root.bind_all("<Button-1>", left_press)
+    root.bind_all("<ButtonRelease-1>", left_release)
+    root.bind_all("<MouseWheel>", mouse_wheel)
     image = PhotoImage(file="mandelbrot.gif")
     label = Label(root, image=image)
     label.pack()
