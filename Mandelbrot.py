@@ -39,14 +39,14 @@ def mandelbrot_image():
         mandelbrot = []
         for y in range(HEIGHT):
             for x in range(WIDTH):
-                # val = mandelbrot_value(map_range(x, 0, WIDTH, -2.5, 1.5), map_range(y, 0, HEIGHT, -2, 2))
-                r = int() % 256
-                g = int() % 256
-                b = int() % 256
+                val = mandelbrot_value(map_range(x, 0, WIDTH, -2.5, 1.5), map_range(y, 0, HEIGHT, -2, 2))
+                r = int(val * x) % 256
+                g = int(x + y + i) % 256
+                b = int(val * y) % 256
                 mandelbrot.append((r, g, b))
         image = PIL.Image.new('RGB', (WIDTH, HEIGHT))
         image.putdata(mandelbrot)
-        image.save("mandelbrot/mandelbrot" + str(i) + ".gif")
+        image.save("images/mandelbrot" + str(i) + ".gif")
 
 
 @jit
