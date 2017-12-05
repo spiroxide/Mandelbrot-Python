@@ -13,40 +13,36 @@ def map_range(f_val, f_start, f_end, t_start, t_end):
 
 
 @jit
-def mandelbrot_value(cmplx, dim):
-    c = cmplx
-    for i in range(MAX_ITERATIONS):
-        if abs(cmplx) > 2:
-            return i
-        cmplx = cmplx ** dim + c
-    return MAX_ITERATIONS
+def mandelbrot_value(real, imaginary):
+    a = real
+    b = imaginary
+
+    i = 0
+    while i < MAX_ITERATIONS:
+        ab = a * b
+
+        a = a * a - b * b + real
+        b = 2 * ab + imaginary
+
+        if a * a + b * b > 4:
+            break
+        i += 1
+    return i
 
 
 @jit
 def mandelbrot_image():
-    for i in range(1, 113, 1):
-        mandelbrot = []
-        for y in range(HEIGHT):
-            for x in range(WIDTH):
-<<<<<<< HEAD
-                val = mandelbrot_value(map_range(x, 0, WIDTH, -2.5, 1.5), map_range(y, 0, HEIGHT, -2, 2))
-                r = int(val * x) % 256
-                g = int(x + y + i) % 256
-                b = int(val * y) % 256
-                mandelbrot.append((r, g, b))
-        image = PIL.Image.new('RGB', (WIDTH, HEIGHT))
-        image.putdata(mandelbrot)
-        image.save("images/mandelbrot" + str(i) + ".gif")
-=======
-                val = mandelbrot_value(complex(map_range(x, 0, WIDTH, -2, 2), map_range(y, 0, HEIGHT, -2, 2)), map_range(i, 1, 113, 0, 4))
-                r = int((val * abs(map_range(x, 0, WIDTH, 0, 256))) % 256)
-                g = int((val * abs(map_range(y, 0, HEIGHT, 0, 256))) % 256)
-                b = int((2 * val * i) % 256)
-                mandelbrot.append((r, g, b))
-        image = PIL.Image.new('RGB', (WIDTH, HEIGHT))
-        image.putdata(mandelbrot)
-        image.save("images/mandelbrot" + str(i) + ".png")
->>>>>>> 3e56ffa1ce5b9fe0c4a98524d4479cf3d7e7f953
+    mandelbrot = []
+    for y in range(HEIGHT):
+        for x in range(WIDTH):
+            val = mandelbrot_value(map_range(x, 0, WIDTH, -2.5, 1.5), map_range(y, 0, WIDTH, -2, 2))
+            r = int(val) % 256
+            g = int(val) % 256
+            b = int(val) % 256
+            mandelbrot.append((r, g, b))
+    image = PIL.Image.new('RGB', (WIDTH, HEIGHT))
+    image.putdata(mandelbrot)
+    image.save("mandelbrot.png")
 
 
 @jit
